@@ -136,7 +136,7 @@ fun ConsultaArticulo() {
                                     }, contexto = contexto
                                 )
                             }
-                            actividad = it.actividades
+                            actividad = ""
                             mensaje=""
                         } else {
                             AltaArticulo(
@@ -163,6 +163,58 @@ fun ConsultaArticulo() {
         ) {
             Text(text = "Agregar")
         }
+        Button(
+            onClick = {
+                ConsultaCodigo(
+                    fecha = fecha,
+                    respuesta = {
+                        if (it!=null) {
+                            var actividadesActual = it.actividades.split("#")
+                            if (actividadesActual.size == 1) {
+                                Borrar(
+                                    fecha = fecha,
+                                    respuesta = {
+                                        if (it) {
+                                            mensaje = "Se eliminó el artículo"
+                                            fecha=""
+                                            actividad=""
+                                        } else
+                                            mensaje = "No existe el código de producto ingresado"
+                                    }, contexto
+                                )
+                            } else {
+                                var actividades = ""
+                                for (i in actividadesActual) {
+                                    if (i != actividad) {
+                                        if (i == actividadesActual[actividadesActual.size - 1]) {
+                                            actividades += i
+                                        } else {
+                                            actividades += i + "#"
+                                        }
+                                    }
+                                }
+                                Modificar(
+                                    actividades = ActividadesDia(fecha, actividades),
+                                    respuesta = {
+                                        if (it)
+                                            mensaje="Los datos fueron modificados"
+                                        else
+                                            mensaje = "No existe el código de producto ingresado"
+                                    }, contexto = contexto
+                                )
+                            }
+                            actividad = ""
+                            mensaje=""
+                        } else {
+                            mensaje = "No hay nada que borrar en esa fecha o no existe esa fecha"
+                        }
+                    }, contexto = contexto
+                )
+            },
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Text(text = "Borrar")
+        }
         Text(text = "$mensaje")
     }
 }
@@ -180,11 +232,11 @@ fun ConsultaCodigo(fecha: String, respuesta: (ActividadesDia?) -> Unit, contexto
             if (response.length() == 1) {
                 try {
                     val objeto = JSONObject(response[0].toString())
-                    val articulo = ActividadesDia(
+                    val actividad = ActividadesDia(
                         objeto.getString("fecha"),
                         objeto.getString("actividades")
                     )
-                    respuesta(articulo)
+                    respuesta(actividad)
                 } catch (e: JSONException) {
                 }
             }
@@ -226,6 +278,30 @@ fun Modificar(actividades: ActividadesDia, respuesta: (Boolean) -> Unit, context
     val parametros = JSONObject()
     parametros.put("fecha", actividades.fecha)
     parametros.put("actividades", actividades.actividades)
+    val requerimiento = JsonObjectRequest(
+        Request.Method.POST,
+        url,
+        parametros,
+        { response ->
+            try {
+                val resu = response["resultado"].toString()
+                if (resu == "1")
+                    respuesta(true)
+                else
+                    respuesta(false)
+            } catch (e: JSONException) {
+                respuesta(false)
+            }
+        }
+    ) { error -> respuesta(false) }
+    requestQueue.add(requerimiento)
+}
+
+fun Borrar(fecha: String, respuesta: (Boolean) -> Unit, contexto: Context) {
+    val requestQueue = Volley.newRequestQueue(contexto)
+    val url = "https://memominder.000webhostapp.com/calendario/borrar.php"
+    val parametros = JSONObject()
+    parametros.put("fecha", fecha)
     val requerimiento = JsonObjectRequest(
         Request.Method.POST,
         url,
