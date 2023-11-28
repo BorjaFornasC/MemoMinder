@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
@@ -31,6 +36,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.Date
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,7 +99,7 @@ fun ConsultaArticulo() {
         )
         Button(
             onClick = {
-                ConsultaCodigo(
+                ConsultaFecha(
                     fecha = fecha,
                     respuesta = {
                         if (it!=null) {
@@ -113,17 +119,17 @@ fun ConsultaArticulo() {
         }
         Button(
             onClick = {
-                ConsultaCodigo(
+                ConsultaFecha(
                     fecha = fecha,
                     respuesta = {
                         if (it!=null) {
-                            var actividadesActual = it.actividades.split("#")
+                            var actividadesActual = it.actividades.split("&&")
                             if (actividadesActual.contains(actividad)) {
                                 mensaje = "Ya tienes puesta esta actividad este día"
                             } else {
                                 var actividades = ""
                                 for (i in actividadesActual) {
-                                    actividades += i + "#"
+                                    actividades += i + "&&"
                                 }
                                 actividades += actividad
                                 Modificar(
@@ -139,7 +145,7 @@ fun ConsultaArticulo() {
                             actividad = ""
                             mensaje=""
                         } else {
-                            AltaArticulo(
+                            AltaFecha(
                                 fecha = fecha,
                                 actividades = actividad,
                                 contexto = contexto,
@@ -165,11 +171,11 @@ fun ConsultaArticulo() {
         }
         Button(
             onClick = {
-                ConsultaCodigo(
+                ConsultaFecha(
                     fecha = fecha,
                     respuesta = {
                         if (it!=null) {
-                            var actividadesActual = it.actividades.split("#")
+                            var actividadesActual = it.actividades.split("&&")
                             if (actividadesActual.size == 1) {
                                 Borrar(
                                     fecha = fecha,
@@ -189,7 +195,7 @@ fun ConsultaArticulo() {
                                         if (i == actividadesActual[actividadesActual.size - 1]) {
                                             actividades += i
                                         } else {
-                                            actividades += i + "#"
+                                            actividades += i + "&&"
                                         }
                                     }
                                 }
@@ -215,13 +221,30 @@ fun ConsultaArticulo() {
         ) {
             Text(text = "Borrar")
         }
+        Button(onClick = { ConsultaFecha(
+            fecha = fecha,
+            respuesta = {
+                if (it!=null) {
+                    actividad = it.actividades
+                    mensaje=""
+                } else {
+                    mensaje = "No existe el código de producto ingresado"
+                    actividad=""
+                }
+            },
+            contexto = contexto
+        )
+        }, modifier = Modifier.padding(10.dp)) {
+            Text(text = "Listar")
+        }
+        Listar(fecha = fecha, actividades = actividad)
         Text(text = "$mensaje")
     }
 }
 
 data class ActividadesDia(val fecha: String, val actividades: String)
 
-fun ConsultaCodigo(fecha: String, respuesta: (ActividadesDia?) -> Unit, contexto: Context) {
+fun ConsultaFecha(fecha: String, respuesta: (ActividadesDia?) -> Unit, contexto: Context) {
     val requestQueue = Volley.newRequestQueue(contexto)
     val url = "https://memominder.000webhostapp.com/calendario/listaractividades.php?fecha=$fecha"
     val requerimiento = JsonArrayRequest(
@@ -248,7 +271,7 @@ fun ConsultaCodigo(fecha: String, respuesta: (ActividadesDia?) -> Unit, contexto
     requestQueue.add(requerimiento)
 }
 
-fun AltaArticulo(fecha: String, actividades: String, contexto: Context,respuesta:
+fun AltaFecha(fecha: String, actividades: String, contexto: Context, respuesta:
     (Boolean) -> Unit) {
     val requestQueue = Volley.newRequestQueue(contexto)
     val url = "https://memominder.000webhostapp.com/calendario/insertar.php"
@@ -319,4 +342,34 @@ fun Borrar(fecha: String, respuesta: (Boolean) -> Unit, contexto: Context) {
         }
     ) { error -> respuesta(false) }
     requestQueue.add(requerimiento)
+}
+@Composable
+fun Listar(fecha: String,actividades: String) {
+    val actividadesHoy = actividades.split("&&")
+    if (actividades != "") {
+        LazyColumn {
+            items(actividadesHoy) { actividadActual ->
+                Card(
+                    elevation = CardDefaults.cardElevation(5.dp),
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                ) {
+                    Column() {
+                        Text(
+                            text = "Codigo: ${fecha}",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp,
+                                bottom = 5.dp)
+                        )
+                        Text(
+                            text = "Actividad: ${actividadActual}",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
