@@ -1,6 +1,8 @@
 package com.example.memominder
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +63,8 @@ fun DatePickerView() {
 
         Text(text = mensaje)
 
+        Text(text = "" + datePickerState.selectedDateMillis?.let { formatedDate(it) })
+
         Text(
             text = selectedDate.toString(),
             color = Color.Red
@@ -73,14 +78,31 @@ private fun convertMillisToDate(millis: Long): String {
     return formatter.format(Date(millis))
 }
 
-/*
+
 @SuppressLint("SimpleDateFormat")
 fun formatedDate(millis: Long): String {
     val date = Date(millis)
-    val day = SimpleDateFormat("dd").format(date)
-    val month = SimpleDateFormat("MM").format(date)
+    val day = SimpleDateFormat("d").format(date)
+    val month = SimpleDateFormat("MMMM").format(date)
     val year = SimpleDateFormat("yyyy").format(date)
-    return "$day/$month/$year"
-}
 
- */
+    return "$day${when(day){
+        "1", "21", "31" -> "st"
+        "2", "22", "32" -> "nd"
+        "3", "23" -> "rd"
+        else -> "th"
+    }} of $month of $year"
+
+    /*val formated = SimpleDateFormat("d'${
+        when (date.day) {
+            1, 21, 31 -> "st"
+            2, 22 -> "nd"
+            3, 23 -> "rd"
+            else -> "th"
+        }
+    } of' MMMM 'of' yyyy", Locale.ENGLISH)
+
+     */
+
+    //return formated.format(date)
+}
