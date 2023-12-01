@@ -61,7 +61,13 @@ class MainActivity : ComponentActivity() {
                         val navController = rememberNavController()
                         NavHost(navController = navController, startDestination = "Portada") {
                             composable("Portada") { portada(navController) }
-                            composable("Calendar") { DatePickerView() }
+                            composable("Calendar") { Calendar(navController = navController) }
+                            composable("Dia/{fecha}",
+                                arguments = listOf(navArgument("fecha")
+                                {type = NavType.StringType}))
+                            {backStackEntry ->
+                                dia(backStackEntry.arguments?.getString("fecha") ?: "")
+                            }
                         }
                     }
                 }

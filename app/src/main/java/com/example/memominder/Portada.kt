@@ -2,17 +2,24 @@ package com.example.memominder
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -25,6 +32,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -36,7 +45,6 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.Date
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -343,33 +351,77 @@ fun Borrar(fecha: String, respuesta: (Boolean) -> Unit, contexto: Context) {
     ) { error -> respuesta(false) }
     requestQueue.add(requerimiento)
 }
+
 @Composable
-fun Listar(fecha: String,actividades: String) {
+fun Listar(fecha: String,actividades: String){
     val actividadesHoy = actividades.split("&&")
+    val contexto = LocalContext.current
+
     if (actividades != "") {
-        LazyColumn {
-            items(actividadesHoy) { actividadActual ->
-                Card(
-                    elevation = CardDefaults.cardElevation(5.dp),
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                ) {
-                    Column() {
-                        Text(
-                            text = "Codigo: ${fecha}",
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(start = 10.dp, end = 10.dp,
-                                bottom = 5.dp)
+        Column {
+            for (act in actividadesHoy) {
+                var showMenu by remember { mutableStateOf(false) }
+                var actividadesActualizadas by remember {
+                    mutableStateOf("")
+                }
+                Row(modifier = Modifier.clickable{showMenu = !showMenu})
+                {
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                        Modifier.width(150.dp)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Borrar actividad", color = Color.Black) },
+                            onClick = { if (actividadesHoy.size == 1) {
+                                Borrar(fecha, respuesta = {}, contexto = contexto)
+                                actividadesActualizadas = "borrado"
+                            } else {
+                                for (a in actividadesHoy) {
+                                    if (a != act) {
+                                        if (act == actividadesHoy[actividadesHoy.size - 1] || a == actividadesHoy[actividadesHoy.size - 1]) {
+                                            actividadesActualizadas += a
+                                        } else {
+                                            actividadesActualizadas += a + "&&"
+                                        }
+                                    }
+                                }
+                                Modificar(ActividadesDia(fecha, actividadesActualizadas), respuesta = {}, contexto)
+                            }
+                            Toast.makeText(contexto, "Has borrado la actividad $act del día $fecha", Toast.LENGTH_LONG).show()
+                            }
                         )
-                        Text(
-                            text = "Actividad: ${actividadActual}",
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(10.dp)
-                        )
+                    }
+
+                    if (actividadesActualizadas == "" || actividadesActualizadas == "borrado") {
+                        Card(
+                            elevation = CardDefaults.cardElevation(5.dp),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Column() {
+                                Text(
+                                    text = "Fecha: ${fecha}",
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(
+                                        start = 10.dp, end = 10.dp,
+                                        bottom = 5.dp
+                                    )
+                                )
+                                Text(
+                                    text = "Actividad: ${act}",
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(10.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        Listar(fecha = fecha, actividades = actividadesActualizadas)
                     }
                 }
             }
         }
     }
 }
+
