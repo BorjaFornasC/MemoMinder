@@ -235,7 +235,7 @@ fun ConsultaArticulo() {
         }, modifier = Modifier.padding(10.dp)) {
             Text(text = "Listar")
         }
-        List(date = fecha, activities = actividad)
+        listDay(date = fecha, activities = actividad)
         Text(text = "$mensaje")
     }
 }
@@ -343,7 +343,7 @@ fun Delete(date: String, response: (Boolean) -> Unit, context: Context) {
 }
 
 @Composable
-fun List(date: String, activities: String){
+fun listDay(date: String, activities: String){
     val todayActivities = activities.split("&&")
     val context = LocalContext.current
 
@@ -408,7 +408,7 @@ fun List(date: String, activities: String){
                     } else if (updatedActivities == "deleted") {
 
                     } else {
-                        List(date = date, activities = updatedActivities)
+                        listDay(date = date, activities = updatedActivities)
                     }
                 }
             }

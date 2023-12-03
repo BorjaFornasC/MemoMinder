@@ -102,6 +102,10 @@ fun DatePickerView(navController: NavHostController) {
             Text(text = "Consult")
         }
 
+        if (dayActivities != "") {
+            listDay(date = selectedDate.toString(), activities = dayActivities)
+        }
+
         Button(onClick = {
             navController.navigate("Day/${selectedDate.toString()}")
         }) {
@@ -116,7 +120,7 @@ fun DatePickerView(navController: NavHostController) {
 fun formatedDate(millis: Long): String {
     val date = Date(millis)
     val day = SimpleDateFormat("d").format(date)
-    val month = SimpleDateFormat("MMMM").format(date)
+    val month = SimpleDateFormat("MM").format(date)
     val year = SimpleDateFormat("yyyy").format(date)
 
     return "$month $day, $year"

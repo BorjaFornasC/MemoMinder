@@ -26,6 +26,7 @@ import com.android.volley.toolbox.Volley
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import java.text.SimpleDateFormat
 import java.time.Month
 
@@ -42,6 +43,8 @@ fun diary(navController : NavHostController) {
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(bottom = it.calculateBottomPadding())) {
+            val context = LocalContext.current
+            allActivities(context)
             printDiary()
         }
 

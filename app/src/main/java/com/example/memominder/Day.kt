@@ -113,7 +113,7 @@ fun day(date : String, navController: NavHostController){
                 }
             }, context)
             if (dayActivities != "") {
-                List(date = date, activities = dayActivities)
+                listDay(date = date, activities = dayActivities)
             }
         }
 
