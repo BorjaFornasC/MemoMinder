@@ -122,3 +122,14 @@ fun formatedDate(millis: Long): String {
     return "$month $day, $year"
 }
 
+fun separateDate(date : String) : List<String> {
+    val separated = date.split(" ")
+    val day = separated[1].split(",")
+    val month = separated[0]
+    val year = separated[2]
+    return listOf(day[0], month, year)
+}
+
+fun mergeDate(list : List<String>) : String {
+    return "${list[1]} ${list[0]}, ${list[2]}"
+}

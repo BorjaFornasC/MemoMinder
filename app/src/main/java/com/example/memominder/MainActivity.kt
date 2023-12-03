@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
                             {backStackEntry ->
                                 day(backStackEntry.arguments?.getString("date") ?: "", navController)
                             }
+                            composable("Diary") { diary(navController = navController)}
                         }
                     }
                 }
@@ -70,7 +71,7 @@ fun MyNavigationBar(navHostController: NavHostController) {
         mutableIntStateOf(3)
     }
 
-    val items = listOf("Calendar", "CoffeeShops", "ElSol")
+    val items = listOf("Calendar", "Diary", "ElSol")
 
     NavigationBar {
         items.forEachIndexed { index, item ->
@@ -79,7 +80,7 @@ fun MyNavigationBar(navHostController: NavHostController) {
                 icon = {
                     when (item) {
                         "Calendar" -> Icon(Icons.Filled.AccountBox, contentDescription = item)
-                        "CoffeeShops" -> Icon(Icons.Filled.Favorite, contentDescription = item)
+                        "Diary" -> Icon(Icons.Filled.Favorite, contentDescription = item)
                         else -> Icon(Icons.Filled.Face, contentDescription = item)
                     }
                 },
@@ -87,7 +88,7 @@ fun MyNavigationBar(navHostController: NavHostController) {
                     selectedItem = index
                     when (selectedItem) {
                         0 -> navHostController.navigate("Calendar")
-                        1 -> navHostController.navigate("CoffeeShops")
+                        1 -> navHostController.navigate("Diary")
                         2 -> navHostController.navigate("ElSol")
                     }
                 },
