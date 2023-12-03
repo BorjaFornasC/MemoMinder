@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -23,15 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -46,8 +42,10 @@ fun Calendar(navController: NavHostController) {
         containerColor = MaterialTheme.colorScheme.background
     ) {
 
-        Box(modifier = Modifier.fillMaxSize().padding(bottom = it.calculateBottomPadding())) {
-            DatePickerView()
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = it.calculateBottomPadding())) {
+            DatePickerView(navController)
         }
 
     }
@@ -55,16 +53,15 @@ fun Calendar(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerView() {
+fun DatePickerView(navController: NavHostController) {
 
-    val contexto = LocalContext.current
+    val context = LocalContext.current
     val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             return true
         }
     })
     val selectedDate = datePickerState.selectedDateMillis?.let {
-        //convertMillisToDate(it)
         formatedDate(it)
     }
 
@@ -79,45 +76,39 @@ fun DatePickerView() {
                 5.dp
             )
         )
-        var actividadesDia by remember {
+        var dayActivities by remember {
             mutableStateOf("")
         }
-        var fecha by remember {
-            mutableStateOf("")
-        }
-        var mensaje by remember { mutableStateOf("") }
+        var message by remember { mutableStateOf("") }
 
         Text(text = selectedDate.toString())
         
         Spacer(modifier = Modifier.size(20.dp))
         
         Button(onClick = {
-            ConsultaFecha(
-                fecha = selectedDate.toString(),
-                respuesta = {
+            ConsultDate(
+                date = selectedDate.toString(),
+                response = {
                     if (it!=null) {
-                        actividadesDia = it.actividades
-                        fecha = selectedDate.toString()
-                        mensaje = ""
+                        dayActivities = it.activities
+                        message = ""
                     } else {
-                        mensaje = "No hay actividades"
+                        message = "There aren't activities"
                     }
-                }, contexto
+                }, context
             )
 
         }) {
-            Text(text = "Consultar")
+            Text(text = "Consult")
         }
 
-        Column {
-
-            if (fecha != "") {
-                Listar(fecha = fecha, actividades = actividadesDia)
-            }
-
-            Text(text = mensaje)
-
+        Button(onClick = {
+            navController.navigate("Day/${selectedDate.toString()}")
+        }) {
+            Text(text = "Add new activity")
         }
+
+        Text(text = message)
     }
 }
 

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -33,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -49,7 +45,7 @@ import org.json.JSONObject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun portada(navController: NavHostController) {
+fun frontPage(navController: NavHostController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -59,16 +55,10 @@ fun portada(navController: NavHostController) {
     ) {
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = "Portada")
+            Text(text = "Front Page")
         }
-        //pruebas
+
         ConsultaArticulo()
-
-        /*var mapDiary by remember {
-            mutableStateOf( mutableMapOf<Date, String>() )
-        }
-
-         */
     }
 }
 
@@ -107,18 +97,18 @@ fun ConsultaArticulo() {
         )
         Button(
             onClick = {
-                ConsultaFecha(
-                    fecha = fecha,
-                    respuesta = {
+                ConsultDate(
+                    date = fecha,
+                    response = {
                         if (it!=null) {
-                            actividad = it.actividades
+                            actividad = it.activities
                             mensaje=""
                         } else {
                             mensaje = "No existe el código de producto ingresado"
                             actividad=""
                         }
                     },
-                    contexto = contexto
+                    context = contexto
                 )
             },
             modifier = Modifier.padding(10.dp)
@@ -127,11 +117,11 @@ fun ConsultaArticulo() {
         }
         Button(
             onClick = {
-                ConsultaFecha(
-                    fecha = fecha,
-                    respuesta = {
+                ConsultDate(
+                    date = fecha,
+                    response = {
                         if (it!=null) {
-                            var actividadesActual = it.actividades.split("&&")
+                            var actividadesActual = it.activities.split("&&")
                             if (actividadesActual.contains(actividad)) {
                                 mensaje = "Ya tienes puesta esta actividad este día"
                             } else {
@@ -140,24 +130,24 @@ fun ConsultaArticulo() {
                                     actividades += i + "&&"
                                 }
                                 actividades += actividad
-                                Modificar(
-                                    actividades = ActividadesDia(fecha, actividades),
-                                    respuesta = {
+                                Modify(
+                                    activities = DayActivities(fecha, actividades),
+                                    response = {
                                         if (it)
                                             mensaje="Los datos fueron modificados"
                                         else
                                             mensaje = "No existe el código de producto ingresado"
-                                    }, contexto = contexto
+                                    }, context = contexto
                                 )
                             }
                             actividad = ""
                             mensaje=""
                         } else {
                             AltaFecha(
-                                fecha = fecha,
-                                actividades = actividad,
-                                contexto = contexto,
-                                respuesta = {
+                                date = fecha,
+                                activities = actividad,
+                                context = contexto,
+                                response = {
                                     if (it) {
                                         mensaje = "se cargaron los datos"
                                         fecha=""
@@ -170,7 +160,7 @@ fun ConsultaArticulo() {
                             mensaje = "No existe el código de producto ingresado"
                             actividad=""
                         }
-                    }, contexto = contexto
+                    }, context = contexto
                 )
             },
             modifier = Modifier.padding(10.dp)
@@ -179,15 +169,15 @@ fun ConsultaArticulo() {
         }
         Button(
             onClick = {
-                ConsultaFecha(
-                    fecha = fecha,
-                    respuesta = {
+                ConsultDate(
+                    date = fecha,
+                    response = {
                         if (it!=null) {
-                            var actividadesActual = it.actividades.split("&&")
+                            var actividadesActual = it.activities.split("&&")
                             if (actividadesActual.size == 1) {
-                                Borrar(
-                                    fecha = fecha,
-                                    respuesta = {
+                                Delete(
+                                    date = fecha,
+                                    response = {
                                         if (it) {
                                             mensaje = "Se eliminó el artículo"
                                             fecha=""
@@ -207,14 +197,14 @@ fun ConsultaArticulo() {
                                         }
                                     }
                                 }
-                                Modificar(
-                                    actividades = ActividadesDia(fecha, actividades),
-                                    respuesta = {
+                                Modify(
+                                    activities = DayActivities(fecha, actividades),
+                                    response = {
                                         if (it)
                                             mensaje="Los datos fueron modificados"
                                         else
                                             mensaje = "No existe el código de producto ingresado"
-                                    }, contexto = contexto
+                                    }, context = contexto
                                 )
                             }
                             actividad = ""
@@ -222,178 +212,177 @@ fun ConsultaArticulo() {
                         } else {
                             mensaje = "No hay nada que borrar en esa fecha o no existe esa fecha"
                         }
-                    }, contexto = contexto
+                    }, context = contexto
                 )
             },
             modifier = Modifier.padding(10.dp)
         ) {
             Text(text = "Borrar")
         }
-        Button(onClick = { ConsultaFecha(
-            fecha = fecha,
-            respuesta = {
+        Button(onClick = { ConsultDate(
+            date = fecha,
+            response = {
                 if (it!=null) {
-                    actividad = it.actividades
+                    actividad = it.activities
                     mensaje=""
                 } else {
                     mensaje = "No existe el código de producto ingresado"
                     actividad=""
                 }
             },
-            contexto = contexto
+            context = contexto
         )
         }, modifier = Modifier.padding(10.dp)) {
             Text(text = "Listar")
         }
-        Listar(fecha = fecha, actividades = actividad)
+        List(date = fecha, activities = actividad)
         Text(text = "$mensaje")
     }
 }
 
-data class ActividadesDia(val fecha: String, val actividades: String)
+data class DayActivities(val date: String, val activities: String)
 
-fun ConsultaFecha(fecha: String, respuesta: (ActividadesDia?) -> Unit, contexto: Context) {
-    val requestQueue = Volley.newRequestQueue(contexto)
-    val url = "https://memominder.000webhostapp.com/calendario/listaractividades.php?fecha=$fecha"
-    val requerimiento = JsonArrayRequest(
+fun ConsultDate(date: String, response: (DayActivities?) -> Unit, context: Context) {
+    val requestQueue = Volley.newRequestQueue(context)
+    val url = "https://memominder.000webhostapp.com/calendario/listaractividades.php?fecha=$date"
+    val request = JsonArrayRequest(
         Request.Method.GET,
         url,
         null,
         { response ->
             if (response.length() == 1) {
                 try {
-                    val objeto = JSONObject(response[0].toString())
-                    val actividad = ActividadesDia(
-                        objeto.getString("fecha"),
-                        objeto.getString("actividades")
+                    val jsonObject = JSONObject(response[0].toString())
+                    val activity = DayActivities(
+                        jsonObject.getString("fecha"),
+                        jsonObject.getString("actividades")
                     )
-                    respuesta(actividad)
+                    response(activity)
                 } catch (e: JSONException) {
                 }
             }
             else
-                respuesta(null);
+                response(null);
         }
     ) { error ->
     }
-    requestQueue.add(requerimiento)
+    requestQueue.add(request)
 }
 
-fun AltaFecha(fecha: String, actividades: String, contexto: Context, respuesta:
+fun AltaFecha(date: String, activities: String, context: Context, response:
     (Boolean) -> Unit) {
-    val requestQueue = Volley.newRequestQueue(contexto)
+    val requestQueue = Volley.newRequestQueue(context)
     val url = "https://memominder.000webhostapp.com/calendario/insertar.php"
-    val parametros=JSONObject()
-    parametros.put("fecha",fecha)
-    parametros.put("actividades",actividades)
-    val requerimiento = JsonObjectRequest(Request.Method.POST,
+    val parameters=JSONObject()
+    parameters.put("fecha",date)
+    parameters.put("actividades",activities)
+    val request = JsonObjectRequest(Request.Method.POST,
         url,
-        parametros,
+        parameters,
         { response ->
             if (response.get("respuesta").toString().equals("ok"))
-                respuesta(true)
+                response(true)
             else
-                respuesta(false)
+                response(false)
         },
         { error ->
-            respuesta(false)
+            response(false)
         }
     )
-    requestQueue.add(requerimiento)
+    requestQueue.add(request)
 }
 
-fun Modificar(actividades: ActividadesDia, respuesta: (Boolean) -> Unit, contexto: Context)
+fun Modify(activities: DayActivities, response: (Boolean) -> Unit, context: Context)
 {
-    val requestQueue = Volley.newRequestQueue(contexto)
+    val requestQueue = Volley.newRequestQueue(context)
     val url = "https://memominder.000webhostapp.com/calendario/modificar.php"
-    val parametros = JSONObject()
-    parametros.put("fecha", actividades.fecha)
-    parametros.put("actividades", actividades.actividades)
-    val requerimiento = JsonObjectRequest(
+    val parameters = JSONObject()
+    parameters.put("fecha", activities.date)
+    parameters.put("actividades", activities.activities)
+    val request = JsonObjectRequest(
         Request.Method.POST,
         url,
-        parametros,
+        parameters,
         { response ->
             try {
                 val resu = response["resultado"].toString()
                 if (resu == "1")
-                    respuesta(true)
+                    response(true)
                 else
-                    respuesta(false)
+                    response(false)
             } catch (e: JSONException) {
-                respuesta(false)
+                response(false)
             }
         }
-    ) { error -> respuesta(false) }
-    requestQueue.add(requerimiento)
+    ) { error -> response(false) }
+    requestQueue.add(request)
 }
 
-fun Borrar(fecha: String, respuesta: (Boolean) -> Unit, contexto: Context) {
-    val requestQueue = Volley.newRequestQueue(contexto)
+fun Delete(date: String, response: (Boolean) -> Unit, context: Context) {
+    val requestQueue = Volley.newRequestQueue(context)
     val url = "https://memominder.000webhostapp.com/calendario/borrar.php"
-    val parametros = JSONObject()
-    parametros.put("fecha", fecha)
-    val requerimiento = JsonObjectRequest(
+    val parameters = JSONObject()
+    parameters.put("fecha", date)
+    val request = JsonObjectRequest(
         Request.Method.POST,
         url,
-        parametros,
+        parameters,
         { response ->
             try {
                 val resu = response["resultado"].toString()
                 if (resu == "1")
-                    respuesta(true)
+                    response(true)
                 else
-                    respuesta(false)
+                    response(false)
             } catch (e: JSONException) {
-                respuesta(false)
+                response(false)
             }
         }
-    ) { error -> respuesta(false) }
-    requestQueue.add(requerimiento)
+    ) { error -> response(false) }
+    requestQueue.add(request)
 }
 
 @Composable
-fun Listar(fecha: String,actividades: String){
-    val actividadesHoy = actividades.split("&&")
-    val contexto = LocalContext.current
+fun List(date: String, activities: String){
+    val todayActivities = activities.split("&&")
+    val context = LocalContext.current
 
-    if (actividades != "") {
+    if (activities != "") {
         Column {
-            for (act in actividadesHoy) {
+            for (act in todayActivities) {
                 var showMenu by remember { mutableStateOf(false) }
-                var actividadesActualizadas by remember {
+                var updatedActivities by remember {
                     mutableStateOf("")
                 }
-                Row(modifier = Modifier.clickable{showMenu = !showMenu})
-                {
+                Row(modifier = Modifier.clickable{showMenu = !showMenu}) {
                     DropdownMenu(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false },
                         Modifier.width(150.dp)
                     ) {
                         DropdownMenuItem(
-                            text = { Text(text = "Borrar actividad", color = Color.Black) },
-                            onClick = { if (actividadesHoy.size == 1) {
-                                Borrar(fecha, respuesta = {}, contexto = contexto)
-                                actividadesActualizadas = "borrado"
+                            text = { Text(text = "Delete activity", color = Color.Black) },
+                            onClick = { if (todayActivities.size == 1) {
+                                Delete(date, response = {}, context = context)
+                                updatedActivities = "deleted"
                             } else {
-                                for (a in actividadesHoy) {
+                                for (a in todayActivities) {
                                     if (a != act) {
-                                        if (act == actividadesHoy[actividadesHoy.size - 1] || a == actividadesHoy[actividadesHoy.size - 1]) {
-                                            actividadesActualizadas += a
+                                        if (act == todayActivities[todayActivities.size - 1] || a == todayActivities[todayActivities.size - 1]) {
+                                            updatedActivities += a
                                         } else {
-                                            actividadesActualizadas += a + "&&"
+                                            updatedActivities += a + "&&"
                                         }
                                     }
                                 }
-                                Modificar(ActividadesDia(fecha, actividadesActualizadas), respuesta = {}, contexto)
+                                Modify(DayActivities(date, updatedActivities), response = {}, context)
                             }
-                            Toast.makeText(contexto, "Has borrado la actividad $act del día $fecha", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "You have deleted the activity $act at the day $date", Toast.LENGTH_LONG).show()
                             }
                         )
                     }
 
-                    if (actividadesActualizadas == "" || actividadesActualizadas == "borrado") {
+                    if (updatedActivities == "") {
                         Card(
                             elevation = CardDefaults.cardElevation(5.dp),
                             modifier = Modifier
@@ -402,7 +391,7 @@ fun Listar(fecha: String,actividades: String){
                         ) {
                             Column() {
                                 Text(
-                                    text = "Fecha: ${fecha}",
+                                    text = "Date: ${date}",
                                     fontSize = 18.sp,
                                     modifier = Modifier.padding(
                                         start = 10.dp, end = 10.dp,
@@ -410,14 +399,16 @@ fun Listar(fecha: String,actividades: String){
                                     )
                                 )
                                 Text(
-                                    text = "Actividad: ${act}",
+                                    text = "Activity: ${act}",
                                     fontSize = 18.sp,
                                     modifier = Modifier.padding(10.dp)
                                 )
                             }
                         }
+                    } else if (updatedActivities == "deleted") {
+
                     } else {
-                        Listar(fecha = fecha, actividades = actividadesActualizadas)
+                        List(date = date, activities = updatedActivities)
                     }
                 }
             }
