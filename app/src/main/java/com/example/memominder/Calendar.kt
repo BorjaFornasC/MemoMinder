@@ -56,7 +56,10 @@ fun Calendar(navController: NavHostController) {
 fun DatePickerView(navController: NavHostController) {
 
     val context = LocalContext.current
-    val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
+    val currentSelectedDateMillis by remember {
+        mutableStateOf(System.currentTimeMillis())
+    }
+    val datePickerState = rememberDatePickerState(currentSelectedDateMillis,selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             return true
         }
@@ -79,9 +82,12 @@ fun DatePickerView(navController: NavHostController) {
         var dayActivities by remember {
             mutableStateOf("")
         }
+        var currentDate by remember {
+            mutableStateOf("")
+        }
         var message by remember { mutableStateOf("") }
 
-        Text(text = selectedDate.toString())
+        Text(text = printDate(selectedDate.toString()))
         
         Spacer(modifier = Modifier.size(20.dp))
         
@@ -91,6 +97,7 @@ fun DatePickerView(navController: NavHostController) {
                 response = {
                     if (it!=null) {
                         dayActivities = it.activities
+                        currentDate = selectedDate.toString()
                         message = ""
                     } else {
                         message = "There aren't activities"
@@ -102,7 +109,7 @@ fun DatePickerView(navController: NavHostController) {
             Text(text = "Consult")
         }
 
-        if (dayActivities != "") {
+        if (dayActivities != "" && currentDate == selectedDate.toString()) {
             listDay(date = selectedDate.toString(), activities = dayActivities)
         }
 
@@ -123,15 +130,36 @@ fun formatedDate(millis: Long): String {
     val month = SimpleDateFormat("MM").format(date)
     val year = SimpleDateFormat("yyyy").format(date)
 
-    return "$month $day, $year"
+    return "$year-$month-$day"
+}
+
+fun printDate(date: String) : String {
+    val separatedDate = separateDate(date)
+    var monthLetters = ""
+    when (separatedDate[1]) {
+        "01" -> monthLetters = "January"
+        "02" -> monthLetters = "February"
+        "03" -> monthLetters = "March"
+        "04" -> monthLetters = "April"
+        "05" -> monthLetters = "May"
+        "06" -> monthLetters = "June"
+        "07" -> monthLetters = "July"
+        "08" -> monthLetters = "August"
+        "09" -> monthLetters = "September"
+        "10" -> monthLetters = "October"
+        "11" -> monthLetters = "November"
+        "12" -> monthLetters = "December"
+    }
+
+    return "$monthLetters ${separatedDate[2]}, ${separatedDate[0]}"
 }
 
 fun separateDate(date : String) : List<String> {
-    val separated = date.split(" ")
-    val day = separated[1].split(",")
-    val month = separated[0]
-    val year = separated[2]
-    return listOf(day[0], month, year)
+    val separated = date.split("-")
+    val day = separated[2]
+    val month = separated[1]
+    val year = separated[0]
+    return listOf(year, month, day)
 }
 
 fun mergeDate(list : List<String>) : String {

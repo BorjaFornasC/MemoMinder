@@ -342,47 +342,64 @@ fun Delete(date: String, response: (Boolean) -> Unit, context: Context) {
     requestQueue.add(request)
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun listDay(date: String, activities: String){
-    val todayActivities = activities.split("&&")
+    val activitiesSplited by remember {
+        mutableStateOf(activities.split("&&"))
+    }
+    var todayActivities = mutableListOf<String>()
+    for (a in activitiesSplited) {
+        todayActivities.add(a)
+    }
     val context = LocalContext.current
+    var currentDate by remember {
+        mutableStateOf(date)
+    }
+    var updatedActivities by remember {
+        mutableStateOf(todayActivities.size )
+    }
 
-    if (activities != "") {
+    if (activities != "" && currentDate == date) {
         Column {
             for (act in todayActivities) {
                 var showMenu by remember { mutableStateOf(false) }
-                var updatedActivities by remember {
+                var currentActivities by remember {
                     mutableStateOf("")
                 }
                 Row(modifier = Modifier.clickable{showMenu = !showMenu}) {
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false },
-                        Modifier.width(150.dp)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = "Delete activity", color = Color.Black) },
-                            onClick = { if (todayActivities.size == 1) {
-                                Delete(date, response = {}, context = context)
-                                updatedActivities = "deleted"
-                            } else {
-                                for (a in todayActivities) {
-                                    if (a != act) {
-                                        if (act == todayActivities[todayActivities.size - 1] || a == todayActivities[todayActivities.size - 1]) {
-                                            updatedActivities += a
-                                        } else {
-                                            updatedActivities += a + "&&"
+
+                    if (currentActivities == "") {
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false },
+                            Modifier.width(150.dp)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(text = "Delete activity", color = Color.Black) },
+                                onClick = { if (updatedActivities == 1) {
+                                    Delete(date, response = {}, context = context)
+                                    currentDate = ""
+                                    todayActivities.remove(act)
+                                } else {
+                                    currentActivities = ""
+                                    for (a in todayActivities) {
+                                        if (a != act) {
+                                            if (act == todayActivities[todayActivities.size - 1] || a == todayActivities[todayActivities.size - 1]) {
+                                                currentActivities += a
+                                            } else {
+                                                currentActivities += a + "&&"
+                                            }
                                         }
                                     }
+                                    Modify(DayActivities(date, currentActivities), response = {}, context)
+                                    todayActivities.remove(act)
+                                    updatedActivities--
                                 }
-                                Modify(DayActivities(date, updatedActivities), response = {}, context)
-                            }
-                            Toast.makeText(context, "You have deleted the activity $act at the day $date", Toast.LENGTH_LONG).show()
-                            }
-                        )
-                    }
-
-                    if (updatedActivities == "") {
+                                    Toast.makeText(context, "You have deleted the activity $act at the day $date", Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
                         Card(
                             elevation = CardDefaults.cardElevation(5.dp),
                             modifier = Modifier
@@ -391,7 +408,7 @@ fun listDay(date: String, activities: String){
                         ) {
                             Column() {
                                 Text(
-                                    text = "Date: ${date}",
+                                    text = "Date: ${printDate(date)}",
                                     fontSize = 18.sp,
                                     modifier = Modifier.padding(
                                         start = 10.dp, end = 10.dp,
@@ -405,14 +422,9 @@ fun listDay(date: String, activities: String){
                                 )
                             }
                         }
-                    } else if (updatedActivities == "deleted") {
-
-                    } else {
-                        listDay(date = date, activities = updatedActivities)
                     }
                 }
             }
         }
     }
 }
-

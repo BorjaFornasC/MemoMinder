@@ -53,8 +53,7 @@ fun day(date : String, navController: NavHostController){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            singleLine = true
         )
         
         Spacer(modifier = Modifier.size(20.dp))

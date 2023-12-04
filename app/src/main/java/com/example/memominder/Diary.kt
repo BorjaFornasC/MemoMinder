@@ -45,7 +45,7 @@ fun diary(navController : NavHostController) {
             .padding(bottom = it.calculateBottomPadding())) {
             val context = LocalContext.current
             allActivities(context)
-            printDiary()
+            //printDiary()
         }
 
     }
@@ -75,6 +75,7 @@ fun allActivities(context: Context) {
     requestQueue.add(jsonObjectRequest)
 }
 
+/*
 data class DaysSeparatedDates(val day : String, val month: String, val year: String, val activities : String)
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("ResourceType", "SimpleDateFormat")
@@ -122,4 +123,7 @@ fun printDiary() {
             }
         }
     }
+
 }
+
+ */
