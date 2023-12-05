@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val navController = rememberNavController()
                         NavHost(navController = navController, startDestination = "Portada") {
-                            composable("Portada") { frontPage(navController) }
+                            composable("Portada") {frontPage(navController) }
                             composable("Calendar") { Calendar(navController = navController) }
                             composable("Day/{date}",
                                 arguments = listOf(navArgument("date")

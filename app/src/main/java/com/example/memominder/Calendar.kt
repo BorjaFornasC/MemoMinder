@@ -136,22 +136,26 @@ fun formatedDate(millis: Long): String {
 fun printDate(date: String) : String {
     val separatedDate = separateDate(date)
     var monthLetters = ""
-    when (separatedDate[1]) {
-        "01" -> monthLetters = "January"
-        "02" -> monthLetters = "February"
-        "03" -> monthLetters = "March"
-        "04" -> monthLetters = "April"
-        "05" -> monthLetters = "May"
-        "06" -> monthLetters = "June"
-        "07" -> monthLetters = "July"
-        "08" -> monthLetters = "August"
-        "09" -> monthLetters = "September"
-        "10" -> monthLetters = "October"
-        "11" -> monthLetters = "November"
-        "12" -> monthLetters = "December"
-    }
+    monthLetters = monthLetters(separatedDate[1])
 
     return "$monthLetters ${separatedDate[2]}, ${separatedDate[0]}"
+}
+
+fun monthLetters(month : String) : String {
+    when (month) {
+        "01" -> return "January"
+        "02" -> return "February"
+        "03" -> return "March"
+        "04" -> return "April"
+        "05" -> return "May"
+        "06" -> return "June"
+        "07" -> return "July"
+        "08" -> return "August"
+        "09" -> return "September"
+        "10" -> return "October"
+        "11" -> return "November"
+        else -> return "December"
+    }
 }
 
 fun separateDate(date : String) : List<String> {
