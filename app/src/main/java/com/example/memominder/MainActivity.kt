@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +37,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,8 +48,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.memominder.ui.theme.Blue2
+import com.example.memominder.ui.theme.BlueCards
 import com.example.memominder.ui.theme.FontTittle
+import com.example.memominder.ui.theme.GreyLight
 import com.example.memominder.ui.theme.MemoMinderTheme
+import com.example.memominder.ui.theme.VibrantBlue
+import com.example.memominder.ui.theme.VibrantYellow
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -76,7 +78,7 @@ class MainActivity : ComponentActivity() {
                             composable(route = DestinationScreen.SplashScreenDest.route) {
                                 SplashScreen(navController = navController)
                             }
-                            composable("Portada") { frontPage(navController) }
+                            composable("FrontPage") { frontPage(navController) }
                             composable("Calendar", enterTransition = {slideIntoContainer(
                                 towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
                                 animationSpec = tween(700)
@@ -108,14 +110,14 @@ fun MyNavigationBar(navHostController: NavHostController) {
 
     val items = listOf("Calendar", "Diary")
 
-    NavigationBar {
+    NavigationBar(containerColor = Blue2) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItem == index,
                 icon = {
                     when (item) {
-                        "Calendar" -> Icon(Icons.Filled.AccountBox, contentDescription = item)
-                        else -> Icon(Icons.Filled.Favorite, contentDescription = item)
+                        "Calendar" -> Image(painter = painterResource(id = R.drawable.iconcalendar), contentDescription = null, modifier = Modifier.size(75.dp))
+                        else -> Image(painter = painterResource(id = R.drawable.icondiary), contentDescription = null, modifier = Modifier.size(75.dp))
                     }
                 },
                 onClick = {
@@ -124,8 +126,7 @@ fun MyNavigationBar(navHostController: NavHostController) {
                         0 -> navHostController.navigate("Calendar")
                         1 -> navHostController.navigate("Diary")
                     }
-                },
-                label = { Text(text = item) }
+                }
             )
         }
     }
@@ -134,7 +135,7 @@ fun MyNavigationBar(navHostController: NavHostController) {
 sealed class DestinationScreen(val route: String) {
     object SplashScreenDest : DestinationScreen(route =
     "splash_screen")
-    object MainScreenDest : DestinationScreen(route = "Portada")
+    object MainScreenDest : DestinationScreen(route = "FrontPage")
 }
 
 @Composable
@@ -168,6 +169,14 @@ fun AnimationSplashContent(
     }
 }
 
+val brushSplash = Brush.verticalGradient(
+    colors = listOf(
+        VibrantBlue,
+        GreyLight,
+        VibrantYellow
+    )
+)
+
 @Composable
 fun DesignSplashScreen(
     modifier: Modifier = Modifier,
@@ -178,13 +187,7 @@ fun DesignSplashScreen(
         modifier = modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(239, 127, 26),
-                        Color(120, 40, 140),
-                        Color(0, 47, 187),
-                    )
-                )
+                brushSplash
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -194,7 +197,7 @@ fun DesignSplashScreen(
                 contentDescription = "Logotipo Splash Screen",
                 modifier = modifier
                     .size(500.dp)
-                    .scale(scale = scaleAnimation.value),
+                    .scale(scale = scaleAnimation.value)
             )
 
             Text(
@@ -221,12 +224,12 @@ fun SplashScreen(navController: NavController) {
         scaleAnimation = scaleAnimation,
         navController = navController,
         durationMillisAnimation = 1500,
-        delayScreen = 3000L
+        delayScreen = 1500L
     )
 
     DesignSplashScreen(
         imagePainter = painterResource(id =
-        R.drawable.logomemominder),
+        R.drawable.logoblack),
         scaleAnimation = scaleAnimation
     )
 }

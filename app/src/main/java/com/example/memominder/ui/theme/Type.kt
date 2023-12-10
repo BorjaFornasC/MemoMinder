@@ -8,10 +8,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.memominder.R
 
+val FontTittle = FontFamily(
+    Font(R.font.courgetteregular)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        //fontFamily = FontFamily.Default,
+        fontFamily = FontTittle,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
@@ -33,7 +38,4 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
     */
-)
-val FontTittle = FontFamily(
-    Font(R.font.courgetteregular)
 )

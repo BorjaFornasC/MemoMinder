@@ -22,9 +22,14 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    /*primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
+
+     */
+    primary = VibrantBlue,
+    secondary = VibrantYellow,
+    tertiary = GreyLight
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -45,10 +50,12 @@ fun MemoMinderTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        /*dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
+         */
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme

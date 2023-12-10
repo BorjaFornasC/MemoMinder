@@ -1,5 +1,7 @@
 package com.example.memominder
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,28 +22,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.memominder.ui.theme.FontTittle
+import com.example.memominder.ui.theme.VibrantYellow
 
 @Composable
 fun day(date : String, navController: NavHostController){
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+        .background(brushSplash)
+        .verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         var activity by remember {
             mutableStateOf("")
         }
         var message by remember {
             mutableStateOf("")
         }
+        var activities by remember {
+            mutableStateOf("")
+        }
         val context = LocalContext.current
         
-        Text(text = date, fontFamily = FontTittle, fontSize = 30.sp, modifier = Modifier.padding(vertical = 30.dp))
+        Text(text = printDate(date), fontFamily = FontTittle, fontSize = 30.sp, modifier = Modifier.padding(vertical = 30.dp))
 
         Text(text = "Add new activity (Don't put &&)", modifier = Modifier.padding(bottom = 10.dp))
 
@@ -48,12 +57,12 @@ fun day(date : String, navController: NavHostController){
             value = activity,
             onValueChange = { activity = it },
             label = {
-                Text("Activity")
+                Text("Activity", color = Color.Black)
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp),
-            singleLine = true
+            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = VibrantYellow, unfocusedBorderColor = Color.Black)
         )
         
         Spacer(modifier = Modifier.size(20.dp))
@@ -67,7 +76,7 @@ fun day(date : String, navController: NavHostController){
                         if (currentActivities.contains(activity)) {
                             message = "You already have this activity set for this day"
                         } else {
-                            var activities = ""
+                            activities = ""
                             for (i in currentActivities) {
                                 activities += i + "&&"
                             }
@@ -101,8 +110,8 @@ fun day(date : String, navController: NavHostController){
         }) {
             Text(text = "Add")
         }
-
-        if (activity != "") {
+        /*
+        if (activities != "") {
             var dayActivities by remember {
                 mutableStateOf("")
             }
@@ -115,6 +124,8 @@ fun day(date : String, navController: NavHostController){
                 listDay(date = date, activities = dayActivities)
             }
         }
+
+         */
 
         Button(onClick = { navController.navigate("Calendar") }) {
             Text(text = "Return to the calendar")
