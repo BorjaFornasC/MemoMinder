@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.memominder.ui.theme.FontTittle
@@ -96,7 +97,7 @@ fun DatePickerView(navController: NavHostController) {
 
         var message by remember { mutableStateOf("") }
 
-        Text(text = printDate(selectedDate.toString()))
+        Text(text = printDate(selectedDate.toString()), fontWeight = FontWeight.Bold)
         
         Spacer(modifier = Modifier.size(20.dp))
 
@@ -130,7 +131,7 @@ fun DatePickerView(navController: NavHostController) {
 @SuppressLint("SimpleDateFormat")
 fun formatedDate(millis: Long): String {
     val date = Date(millis)
-    val day = SimpleDateFormat("d").format(date)
+    val day = SimpleDateFormat("dd").format(date)
     val month = SimpleDateFormat("MM").format(date)
     val year = SimpleDateFormat("yyyy").format(date)
 
@@ -171,5 +172,5 @@ fun separateDate(date : String) : List<Int> {
 }
 
 fun mergeDate(list : List<String>) : String {
-    return "${list[1]} ${list[0]}, ${list[2]}"
+    return "${list[0]}-${list[1]}-${list[2]}"
 }

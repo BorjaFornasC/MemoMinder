@@ -110,22 +110,6 @@ fun day(date : String, navController: NavHostController){
         }) {
             Text(text = "Add", fontFamily = FontTittle)
         }
-        /*
-        if (activities != "") {
-            var dayActivities by remember {
-                mutableStateOf("")
-            }
-            ConsultDate(date, response = {
-                if (it != null) {
-                    dayActivities = it.activities
-                }
-            }, context)
-            if (dayActivities != "") {
-                listDay(date = date, activities = dayActivities)
-            }
-        }
-
-         */
 
         Button(onClick = { navController.navigate("Calendar") }) {
             Text(text = "Return to the calendar", fontFamily = FontTittle)
