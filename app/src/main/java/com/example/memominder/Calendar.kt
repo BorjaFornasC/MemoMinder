@@ -145,28 +145,28 @@ fun printDate(date: String) : String {
     return "$monthLetters ${separatedDate[2]}, ${separatedDate[0]}"
 }
 
-fun monthLetters(month : String) : String {
+fun monthLetters(month : Int) : String {
     when (month) {
-        "01" -> return "January"
-        "02" -> return "February"
-        "03" -> return "March"
-        "04" -> return "April"
-        "05" -> return "May"
-        "06" -> return "June"
-        "07" -> return "July"
-        "08" -> return "August"
-        "09" -> return "September"
-        "10" -> return "October"
-        "11" -> return "November"
+        1 -> return "January"
+        2 -> return "February"
+        3 -> return "March"
+        4 -> return "April"
+        5 -> return "May"
+        6 -> return "June"
+        7 -> return "July"
+        8 -> return "August"
+        9 -> return "September"
+        10 -> return "October"
+        11 -> return "November"
         else -> return "December"
     }
 }
 
-fun separateDate(date : String) : List<String> {
+fun separateDate(date : String) : List<Int> {
     val separated = date.split("-")
-    val day = separated[2]
-    val month = separated[1]
-    val year = separated[0]
+    val day = separated[2].toInt()
+    val month = separated[1].toInt()
+    val year = separated[0].toInt()
     return listOf(year, month, day)
 }
 

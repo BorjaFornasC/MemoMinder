@@ -1,17 +1,14 @@
 package com.example.memominder
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -77,29 +74,35 @@ fun allActivities(context: Context) {
     requestQueue.add(jsonObjectRequest)
 }
 
-data class DaysSeparatedDates(val day : String, val month: String, val year: String, val activities : String)
+data class DaysSeparatedDates(
+    val year: Int,
+    val month: String,
+    val monthNumber: Int,
+    val day: Int,
+    val activities: List<String>
+)
 @OptIn(ExperimentalFoundationApi::class)
-@SuppressLint("ResourceType", "SimpleDateFormat")
 @Composable
 fun printDiary() {
-
     val dates = mutableListOf<DaysSeparatedDates>()
     for (day in dayActivities) {
         val daySep = separateDate(day.date)
-        dates.add(DaysSeparatedDates(daySep[2], monthLetters(daySep[1]), daySep[0], day.activities))
+        val activitiesNow = day.activities.split("&&")
+        val datesSeparated = DaysSeparatedDates(daySep[0], monthLetters(daySep[1]), daySep[1], daySep[2], activitiesNow)
+        dates.add(datesSeparated)
     }
 
-    val years: Map<String, Map<String, List<DaysSeparatedDates>>> = dates
+    val years: Map<Int, Map<Int, List<DaysSeparatedDates>>> = dates
         .groupBy { it.year }
         .mapValues { (_, yearDates) ->
-            yearDates.groupBy { it.month }
+            yearDates.groupBy { it.monthNumber }
         }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         years.forEach { (year, months) ->
             stickyHeader {
                 Text(
-                    text = year,
+                    text = year.toString(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.LightGray),
@@ -109,7 +112,7 @@ fun printDiary() {
             months.forEach { (month, myDates) ->
                 stickyHeader {
                     Text(
-                        text = month,
+                        text = monthLetters(month),
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.LightGray),
@@ -117,7 +120,6 @@ fun printDiary() {
                     )
                 }
                 items(myDates) { today ->
-
                     Card(
                         elevation = CardDefaults.cardElevation(5.dp),
                         modifier = Modifier
@@ -126,12 +128,11 @@ fun printDiary() {
                     ) {
                         Column {
                             Text(
-                                text = "Date: ${mergeDate(listOf(today.day, today.month, today.year))}",
+                                text = "Date: ${mergeDate(listOf(today.day.toString(), today.month, today.year.toString()))}",
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 5.dp)
                             )
-                            val todayActivities = today.activities.split("&&")
-                            for (tAct in todayActivities) {
+                            for (tAct in today.activities) {
                                 Text(
                                     text = "Activity: ${tAct}",
                                     fontSize = 18.sp,

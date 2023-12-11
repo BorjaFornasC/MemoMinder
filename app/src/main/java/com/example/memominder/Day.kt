@@ -108,7 +108,7 @@ fun day(date : String, navController: NavHostController){
                 }, context = context
             )
         }) {
-            Text(text = "Add")
+            Text(text = "Add", fontFamily = FontTittle)
         }
         /*
         if (activities != "") {
@@ -128,7 +128,7 @@ fun day(date : String, navController: NavHostController){
          */
 
         Button(onClick = { navController.navigate("Calendar") }) {
-            Text(text = "Return to the calendar")
+            Text(text = "Return to the calendar", fontFamily = FontTittle)
         }
 
         Text(text = message)
