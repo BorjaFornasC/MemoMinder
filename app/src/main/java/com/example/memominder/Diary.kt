@@ -5,7 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,15 +18,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.memominder.ui.theme.LightBlue
 
 @Composable
 fun diary(navController : NavHostController) {
@@ -40,7 +43,8 @@ fun diary(navController : NavHostController) {
 
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = it.calculateBottomPadding())) {
+            .padding(bottom = it.calculateBottomPadding())
+            .background(brushSplash)) {
             val context = LocalContext.current
             allActivities(context)
             if (dayActivities.isNotEmpty()) {
@@ -51,6 +55,7 @@ fun diary(navController : NavHostController) {
 }
 data class Actividad(val date: String, val activities: String)
 val dayActivities = mutableStateListOf<Actividad>()
+@Composable
 fun allActivities(context: Context) {
     val url = "https://memominder.000webhostapp.com/calendario/actividadesDiario.php"
     val requestQueue = Volley.newRequestQueue(context)
@@ -63,9 +68,9 @@ fun allActivities(context: Context) {
             dayActivities.clear()
             for (i in 0 until jsonArray.length()) {
                 val registro = jsonArray.getJSONObject(i)
-                val codigo = registro.getString("fecha")
-                val descripcion = registro.getString("actividades")
-                dayActivities.add(Actividad(codigo, descripcion))
+                val date = registro.getString("fecha")
+                val activities = registro.getString("actividades")
+                dayActivities.add(Actividad(date, activities))
             }
         },
         { error ->
@@ -85,61 +90,65 @@ data class DaysSeparatedDates(
 @Composable
 fun printDiary() {
     val dates = mutableListOf<DaysSeparatedDates>()
+    var catena = ""
     for (day in dayActivities) {
+        catena += "$day + \n"
         val daySep = separateDate(day.date)
         val activitiesNow = day.activities.split("&&")
         val datesSeparated = DaysSeparatedDates(daySep[0], monthLetters(daySep[1]), daySep[1], daySep[2], activitiesNow)
         dates.add(datesSeparated)
     }
-
     val years: Map<Int, Map<Int, List<DaysSeparatedDates>>> = dates
         .groupBy { it.year }
         .mapValues { (_, yearDates) ->
             yearDates.groupBy { it.monthNumber }
         }
 
+
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         years.forEach { (year, months) ->
             stickyHeader {
-                Text(
-                    text = year.toString(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray),
-                    fontSize = 16.sp
-                )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = year.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        fontSize = 50.sp,
+                        textAlign = Center,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             months.forEach { (month, myDates) ->
                 stickyHeader {
                     Text(
                         text = monthLetters(month),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.LightGray),
-                        fontSize = 16.sp
+                            .fillMaxWidth().padding(start = 15.dp),
+                        fontSize = 25.sp
                     )
                 }
+                
                 items(myDates) { today ->
-                    Card(
-                        elevation = CardDefaults.cardElevation(5.dp),
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Column {
-                            Text(
-                                text = "Date: ${mergeDate(listOf(today.day.toString(), today.month, today.year.toString()))}",
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 5.dp)
-                            )
-                            for (tAct in today.activities) {
+
+                    for (tAct in today.activities) {
+                        Card(
+                            elevation = CardDefaults.cardElevation(5.dp),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = LightBlue)
+                        ) {
+                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = today.day.toString(), modifier = Modifier
+                                    .weight(1.0f)
+                                    .padding(start = 10.dp))
                                 Text(
-                                    text = "Activity: ${tAct}",
+                                    text = "${tAct}",
                                     fontSize = 18.sp,
                                     modifier = Modifier.padding(10.dp)
                                 )
                             }
-
                         }
                     }
                 }

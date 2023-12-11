@@ -12,7 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val VibrantBlue = Color(0xFF3498db)
 val VibrantYellow = Color(0xFFf39c12)
-val GreyLight = Color(0xFFecf0f1)
+val GrayLight = Color(0xFFecf0f1)
 
-val Blue2 = Color(0xFFE0F4FF)
+val LightBlue = Color(0xFFE0F4FF)
 val BlueCards = Color(0xFF87C4FF)

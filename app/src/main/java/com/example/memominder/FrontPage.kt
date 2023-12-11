@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -39,42 +42,44 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.memominder.ui.theme.BlueCards
+import com.example.memominder.ui.theme.LightBlue
 import com.example.memominder.ui.theme.FontTittle
-import com.example.memominder.ui.theme.GreyLight
+import com.example.memominder.ui.theme.GrayLight
 import org.json.JSONException
 import org.json.JSONObject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun frontPage(navController: NavHostController) {
+fun FrontPage(navController: NavHostController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             MyNavigationBar(navHostController = navController)
         },
-        containerColor = GreyLight
-        //containerColor = MaterialTheme.colorScheme.background
+        containerColor = GrayLight
     ) {
 
         Box(modifier = Modifier
             .fillMaxSize()
             .background(brushSplash), contentAlignment = Alignment.Center) {
-            welcome()
+            Welcome()
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun welcome() {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun Welcome() {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
         Image(
             painter = painterResource(id = R.drawable.logoblack),
             contentDescription = "Logotipo Splash Screen",
             modifier = Modifier
-                .size(500.dp)
+                .size(500.dp),
+            contentScale = ContentScale.Fit
         )
     }
 }
@@ -184,7 +189,7 @@ fun Delete(date: String, response: (Boolean) -> Unit, context: Context) {
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun listDay(date: String, activities: String){
-    val activitiesSplited by remember {
+    var activitiesSplited by remember {
         mutableStateOf(activities.split("&&"))
     }
     var todayActivities = mutableListOf<String>()
@@ -195,7 +200,7 @@ fun listDay(date: String, activities: String){
     var currentDate by remember {
         mutableStateOf(date)
     }
-    var updatedActivities by remember {
+    var updatedActivitiesSize by remember {
         mutableStateOf(todayActivities.size )
     }
 
@@ -208,20 +213,23 @@ fun listDay(date: String, activities: String){
                 }
                 Row(modifier = Modifier.clickable{showMenu = !showMenu}) {
 
-                    if (currentActivities == "") {
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false },
-                            Modifier.width(150.dp)
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(text = "Delete activity", color = Color.Black) },
-                                onClick = { if (updatedActivities == 1) {
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                        Modifier.width(150.dp).background(LightBlue)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Delete activity", color = Color.Black) },
+                            onClick = {
+                                if (updatedActivitiesSize == 1) {
                                     Delete(date, response = {}, context = context)
                                     currentDate = ""
                                     todayActivities.remove(act)
+                                    activitiesSplited = todayActivities
+                                    showMenu = !showMenu
                                 } else {
                                     currentActivities = ""
+                                    todayActivities.remove(act)
                                     for (a in todayActivities) {
                                         if (a != act) {
                                             if (act == todayActivities[todayActivities.size - 1] || a == todayActivities[todayActivities.size - 1]) {
@@ -231,39 +239,48 @@ fun listDay(date: String, activities: String){
                                             }
                                         }
                                     }
-                                    Modify(DayActivities(date, currentActivities), response = {}, context)
-                                    todayActivities.remove(act)
-                                    updatedActivities--
+                                    Modify(
+                                        DayActivities(date, currentActivities),
+                                        response = {},
+                                        context
+                                    )
+                                    updatedActivitiesSize--
+                                    activitiesSplited = todayActivities
+                                    showMenu = !showMenu
                                 }
-                                    Toast.makeText(context, "You have deleted the activity $act at the day $date", Toast.LENGTH_LONG).show()
-                                }
+                                Toast.makeText(
+                                    context,
+                                    "You have deleted the activity $act at the day $date",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        )
+                    }
+                    Card(
+                        elevation = CardDefaults.cardElevation(5.dp),
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = BlueCards)
+                    ) {
+                        Column() {
+                            Text(
+                                text = "Date: ${printDate(date)}",
+                                fontSize = 18.sp,
+                                fontFamily = FontTittle,
+                                modifier = Modifier.padding(
+                                    start = 10.dp, end = 10.dp,
+                                    bottom = 5.dp
+                                )
+                            )
+                            Text(
+                                text = "Activity: ${act}",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(10.dp)
                             )
                         }
-                        Card(
-                            elevation = CardDefaults.cardElevation(5.dp),
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = BlueCards)
-                        ) {
-                            Column() {
-                                Text(
-                                    text = "Date: ${printDate(date)}",
-                                    fontSize = 18.sp,
-                                    fontFamily = FontTittle,
-                                    modifier = Modifier.padding(
-                                        start = 10.dp, end = 10.dp,
-                                        bottom = 5.dp
-                                    )
-                                )
-                                Text(
-                                    text = "Activity: ${act}",
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(10.dp)
-                                )
-                            }
-                        }
                     }
+
                 }
             }
         }

@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -48,10 +45,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.memominder.ui.theme.Blue2
-import com.example.memominder.ui.theme.BlueCards
+import com.example.memominder.ui.theme.LightBlue
 import com.example.memominder.ui.theme.FontTittle
-import com.example.memominder.ui.theme.GreyLight
+import com.example.memominder.ui.theme.GrayLight
 import com.example.memominder.ui.theme.MemoMinderTheme
 import com.example.memominder.ui.theme.VibrantBlue
 import com.example.memominder.ui.theme.VibrantYellow
@@ -78,7 +74,7 @@ class MainActivity : ComponentActivity() {
                             composable(route = DestinationScreen.SplashScreenDest.route) {
                                 SplashScreen(navController = navController)
                             }
-                            composable("FrontPage") { frontPage(navController) }
+                            composable("FrontPage") { FrontPage(navController) }
                             composable("Calendar", enterTransition = {slideIntoContainer(
                                 towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
                                 animationSpec = tween(700)
@@ -110,7 +106,7 @@ fun MyNavigationBar(navHostController: NavHostController) {
 
     val items = listOf("Calendar", "Diary")
 
-    NavigationBar(containerColor = Blue2) {
+    NavigationBar(containerColor = LightBlue) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItem == index,
@@ -172,7 +168,7 @@ fun AnimationSplashContent(
 val brushSplash = Brush.verticalGradient(
     colors = listOf(
         VibrantBlue,
-        GreyLight,
+        GrayLight,
         VibrantYellow
     )
 )
