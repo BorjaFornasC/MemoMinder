@@ -10,7 +10,6 @@ import com.example.memominder.R
 
 val FontTittle = FontFamily(
     Font(R.font.courgetteregular)
-    //Font(R.font.bekind)
 )
 
 // Set of Material typography styles to start with

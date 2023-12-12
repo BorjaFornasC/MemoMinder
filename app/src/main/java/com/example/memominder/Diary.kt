@@ -54,7 +54,7 @@ fun diary(navController : NavHostController) {
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(bottom = it.calculateBottomPadding())
-            .background(brushSplash)) {
+            .background(backgroundBrush)) {
             val context = LocalContext.current
             allActivities(context)
             if (dayActivities.isNotEmpty()) {
@@ -208,13 +208,13 @@ fun printDiary() {
                                 ) {
                                     Text(
                                         text = today.day.toString(), modifier = Modifier
-                                            .weight(1.0f)
+                                            .weight(0.15f)
                                             .padding(start = 20.dp)
                                     )
                                     Text(
                                         text = tAct,
                                         fontSize = 18.sp,
-                                        modifier = Modifier.padding(10.dp).weight(2.0f)
+                                        modifier = Modifier.padding(10.dp).weight(0.85f)
                                     )
                                 }
                             }

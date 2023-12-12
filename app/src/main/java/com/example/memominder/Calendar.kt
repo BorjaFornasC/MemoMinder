@@ -52,7 +52,7 @@ fun Calendar(navController: NavHostController) {
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(bottom = it.calculateBottomPadding())
-            .background(brushSplash)) {
+            .background(backgroundBrush)) {
             DatePickerView(navController)
         }
 
@@ -81,9 +81,15 @@ fun DatePickerView(navController: NavHostController) {
 
         DatePicker(
             state = datePickerState,
+            dateFormatter = DatePickerDefaults.dateFormatter(),
+            showModeToggle = true,
             colors = DatePickerDefaults.colors(dividerColor = Color.Transparent),
             headline = { Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                Text(text = printDate(selectedDate.toString()), fontFamily = FontTittle)
+                if (selectedDate == null) {
+                    Text(text = "No date selected", modifier = Modifier.padding(start = 10.dp))
+                } else {
+                    Text(text = printDate(selectedDate.toString()), fontFamily = FontTittle)
+                }
             }}
         )
 
@@ -97,7 +103,11 @@ fun DatePickerView(navController: NavHostController) {
 
         var message by remember { mutableStateOf("") }
 
-        Text(text = printDate(selectedDate.toString()), fontWeight = FontWeight.Bold)
+        if (selectedDate == null) {
+            Text(text = "No date selected", modifier = Modifier.padding(start = 10.dp))
+        } else {
+            Text(text = printDate(selectedDate.toString()), fontWeight = FontWeight.Bold)
+        }
         
         Spacer(modifier = Modifier.size(20.dp))
 
