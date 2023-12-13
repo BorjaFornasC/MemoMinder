@@ -35,8 +35,10 @@ import com.example.memominder.ui.theme.LightBlue
 import org.json.JSONException
 import org.json.JSONObject
 
+//Here, I do a data class for the data of the database.
 data class DayActivities(val date: String, val activities: String)
 
+//This function consults a date and if the date exists in the database, returns the activities of that day.
 fun ConsultDate(date: String, response: (DayActivities?) -> Unit, context: Context) {
     val requestQueue = Volley.newRequestQueue(context)
     val url = "https://memominder.000webhostapp.com/calendario/listaractividades.php?fecha=$date"
@@ -64,6 +66,7 @@ fun ConsultDate(date: String, response: (DayActivities?) -> Unit, context: Conte
     requestQueue.add(request)
 }
 
+//This function inserts a date and the activities, of that date, to the database.
 fun AltaFecha(date: String, activities: String, context: Context, response:
     (Boolean) -> Unit) {
     val requestQueue = Volley.newRequestQueue(context)
@@ -88,6 +91,7 @@ fun AltaFecha(date: String, activities: String, context: Context, response:
     requestQueue.add(request)
 }
 
+//This function does an update on the date at the database.
 fun Modify(activities: DayActivities, response: (Boolean) -> Unit, context: Context)
 {
     val requestQueue = Volley.newRequestQueue(context)
@@ -114,6 +118,7 @@ fun Modify(activities: DayActivities, response: (Boolean) -> Unit, context: Cont
     requestQueue.add(request)
 }
 
+//This function deletes a date and its activities at the database.
 fun Delete(date: String, response: (Boolean) -> Unit, context: Context) {
     val requestQueue = Volley.newRequestQueue(context)
     val url = "https://memominder.000webhostapp.com/calendario/borrar.php"
@@ -138,6 +143,7 @@ fun Delete(date: String, response: (Boolean) -> Unit, context: Context) {
     requestQueue.add(request)
 }
 
+//And this function lists all the activities of a date.
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun listDay(date: String, activities: String){

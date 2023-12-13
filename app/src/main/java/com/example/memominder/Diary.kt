@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.memominder.ui.theme.LightBlue
 
+//This function does the scaffold with the navigation bar to navigate by the screens, the function to extract all the activities of the database and the function to print this.
 @Composable
 fun diary(navController : NavHostController) {
     Scaffold(
@@ -63,8 +64,11 @@ fun diary(navController : NavHostController) {
         }
     }
 }
-data class Actividad(val date: String, val activities: String)
-val dayActivities = mutableStateListOf<Actividad>()
+
+//This is a list that stores the dates and their activities.
+val dayActivities = mutableStateListOf<DayActivities>()
+
+//This function extracts the activities from the database.
 @Composable
 fun allActivities(context: Context) {
     val url = "https://memominder.000webhostapp.com/calendario/actividadesDiario.php"
@@ -80,7 +84,7 @@ fun allActivities(context: Context) {
                 val registro = jsonArray.getJSONObject(i)
                 val date = registro.getString("fecha")
                 val activities = registro.getString("actividades")
-                dayActivities.add(Actividad(date, activities))
+                dayActivities.add(DayActivities(date, activities))
             }
         },
         { error ->
@@ -89,6 +93,7 @@ fun allActivities(context: Context) {
     requestQueue.add(jsonObjectRequest)
 }
 
+//This data class is for store the DayActivities but with the date separated and with the activities in a List of Strings.
 data class DaysSeparatedDates(
     val year: Int,
     val month: String,
@@ -96,6 +101,8 @@ data class DaysSeparatedDates(
     val day: Int,
     val activities: List<String>
 )
+
+//This function prints the diary, in other words, lists the dates and the activities, grouped by the year and the month.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun printDiary() {

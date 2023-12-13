@@ -38,6 +38,7 @@ import com.example.memominder.ui.theme.FontTittle
 import java.text.SimpleDateFormat
 import java.util.Date
 
+//This function does a Scaffold, and this calls to the navigation bar and to the function of the DatePickerView.
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Calendar(navController: NavHostController) {
@@ -59,6 +60,7 @@ fun Calendar(navController: NavHostController) {
     }
 }
 
+//This function create the datePicker, that creates the calendar, and apart, prints the activities of each date at the bottom of the calendar, when you choose a date.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerView(navController: NavHostController) {
@@ -138,6 +140,7 @@ fun DatePickerView(navController: NavHostController) {
     }
 }
 
+//This function formats the date from milliseconds to a String.
 @SuppressLint("SimpleDateFormat")
 fun formatedDate(millis: Long): String {
     val date = Date(millis)
@@ -148,6 +151,7 @@ fun formatedDate(millis: Long): String {
     return "$year-$month-$day"
 }
 
+//This function formats the date from the date of the database to the date that is printed in the calendar.
 fun printDate(date: String) : String {
     val separatedDate = separateDate(date)
     var monthLetters = ""
@@ -156,6 +160,7 @@ fun printDate(date: String) : String {
     return "$monthLetters ${separatedDate[2]}, ${separatedDate[0]}"
 }
 
+//This function changes a month with numbers to a month with letters
 fun monthLetters(month : Int) : String {
     when (month) {
         1 -> return "January"
@@ -173,6 +178,7 @@ fun monthLetters(month : Int) : String {
     }
 }
 
+//This function separates a date that is in a String to a List with the day, month and year.
 fun separateDate(date : String) : List<Int> {
     val separated = date.split("-")
     val day = separated[2].toInt()
@@ -181,6 +187,7 @@ fun separateDate(date : String) : List<Int> {
     return listOf(year, month, day)
 }
 
+//And this function merges a date that is separated.
 fun mergeDate(list : List<String>) : String {
     return "${list[0]}-${list[1]}-${list[2]}"
 }

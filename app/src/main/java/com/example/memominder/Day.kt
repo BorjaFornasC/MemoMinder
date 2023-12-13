@@ -29,6 +29,7 @@ import androidx.navigation.NavHostController
 import com.example.memominder.ui.theme.FontTittle
 import com.example.memominder.ui.theme.VibrantYellow
 
+//This function is to insert new activities to a date in the database.
 @Composable
 fun day(date : String, navController: NavHostController){
 
